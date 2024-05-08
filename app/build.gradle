@@ -20,14 +20,14 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++14"
-                abiFilters 'armeabi-v7a'
+                abiFilters "arm64-v8a", "armeabi-v7a"
                 arguments "-DANDROID_STL=c++_shared"
 //                arguments "-DANDROID_STL=gnustl_static"
             }
 
         }
         ndk {
-            abiFilters 'armeabi-v7a'
+            abiFilters "arm64-v8a", "armeabi-v7a"
         }
 
     }
@@ -46,16 +46,19 @@ android {
 //        }
 //    }
 
-    //加上
-//    sourceSets{
-//        main{
-//            //当前这个目录下的库文件会被调用并且被打包进apk中
-//            jniLibs.srcDirs = ['src/main/cpp/jniLibs']
-//        }
-//    }
+    //加上这行代码，作用是指定项目使用的jni库的目录，指定了这个之后，会把库下面的各种abi架构的so都打进apk中
+    sourceSets {
+        main {
+            //当前这个目录下的库文件会被调用并且被打包进apk中
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
 
     externalNativeBuild {
+        //这里的代码是用于编译CMakeLists.txt中定义的各种c++库文件，native-lib.cpp文件的，里面定义了自定义的各种c++的代码
+        //这里编译有可能出现cmake的版本和ndk版本不匹配的问题，各种command报错的问题，需要进行ndkVersion的设置
         cmake {
+            ndkVersion '21.1.6352462'
             path "CMakeLists.txt"
         }
     }
